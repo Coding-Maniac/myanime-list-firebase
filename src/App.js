@@ -8,7 +8,7 @@ function App() {
         <Header />
         <Container className="mt-5" maxWidth="md" >
             <Grid container spacing={1}>
-                <Grid container item md={4}>
+                <Grid container item md={3}>
                     <ListingCard />
                 </Grid>
             </Grid>

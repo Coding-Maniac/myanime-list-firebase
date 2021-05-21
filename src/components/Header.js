@@ -1,11 +1,10 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import {IconButton, Typography} from "@material-ui/core";
+import {Typography} from "@material-ui/core";
 import {InputBase} from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from '@material-ui/icons/Search';
-import MenuIcon from '@material-ui/icons/Menu';
 
 // We are setting the styles using useStyles
 const useStyles = makeStyles((theme) => ({
