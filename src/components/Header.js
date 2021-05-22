@@ -1,11 +1,11 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import {Typography} from "@material-ui/core";
+import {TextField, Typography} from "@material-ui/core";
 import {InputBase} from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from '@material-ui/icons/Search';
-
+import {Autocomplete} from "@material-ui/lab";
 // We are setting the styles using useStyles
 const useStyles = makeStyles((theme) => ({
     root:{
@@ -59,31 +59,92 @@ const useStyles = makeStyles((theme) => ({
                 width: '25ch',
             }
         }
-    }
+    },
+    listStyle: {
+        position: 'absolute',
+        background:'white',
+        top: '19px',
+        marginLeft: '10px',
+        width: '96%',
+        listStyle:'none',
+        paddingLeft: '0',
+        borderRadius: '4px',
+        boxShadow: "-2px 3px 9px #a19d9d",
+
+    },
+    listItems: {
+        padding: '1rem',
+        color:'black',
+        borderBottom: '1px solid black',
+        display: 'flex',
+        alignItems:'center',
+    },
+    listItemTitle: {
+        fontSize:'16px',
+        fontWeight:'bold',
+        marginLeft: '1rem',
+    },
+    listItemsIcon: {
+        width: '30px'
+    },
 }));
-
 function Header() {
+    const val = [
+        {title: 'hii'},
+        {title: 'Vall'}
+    ]
+    const [search,setSearch] = useState("");
+    const [animeList, setAnimeList] = useState([]) ;
     // Calling useStyles and assign it to classes to access the styling
-    const classes = useStyles();
 
+    useEffect(() => {
+        if (search.length >= 3) {
+            fetch(`https://api.jikan.moe/v3/search/anime?q=${search}&limit=6`).then(
+                res => res.json()
+            ).then(
+                (res) => {
+                    let results = res.results;
+                    setAnimeList(results)
+                }
+            )
+        }
+    },[search])
+    const classes = useStyles();
+    // console.log(`Search: ${search}`)
     // Writing the actual Navbar code
+    console.log(animeList)
     return(
+
         <div className={classes.root}>
-            <AppBar position="static">
+            <AppBar position="static" >
                 <Toolbar>
                     <Typography className={classes.title} variant="h6" noWrap>
                         My Anime List
                     </Typography>
-                    <div className={classes.search}>
-                        <div className={classes.searchIcon}>
-                            <SearchIcon/>
+                    <div style={{position: 'relative'}}>
+                        <div className={classes.search}>
+                            <div className={classes.searchIcon}>
+                                <SearchIcon/>
+                            </div>
+                            <InputBase placeholder="search" classes={{
+                                root: classes.inputRoot,
+                                input: classes.inputInput,
+                            }}
+                           inputProps={{ 'aria-label': 'search' }}
+                           value={search}
+                           onChange={(e) => setSearch(e.target.value)}
+                            />
                         </div>
-                        <InputBase placeholder="search" classes={{
-                                    root: classes.inputRoot,
-                                    input: classes.inputInput,
-                                }}
-                               inputProps={{ 'aria-label': 'search' }}
-                        />
+                        <ul className={classes.listStyle}>
+                            {
+                                animeList.map(ele =>(
+                                    <li className={classes.listItems} key={ele.mal_id}>
+                                        <img className={classes.listItemsIcon} src={ele.image_url} />
+                                        <span className={classes.listItemTitle}>{ele.title}</span>
+                                    </li>
+                                ))
+                            }
+                        </ul>
                     </div>
                 </Toolbar>
             </AppBar>
