@@ -6,6 +6,7 @@ import {InputBase} from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from '@material-ui/icons/Search';
 import {Autocomplete} from "@material-ui/lab";
+import AnimeDialog from "./AnimeDialog";
 // We are setting the styles using useStyles
 const useStyles = makeStyles((theme) => ({
     root:{
@@ -137,11 +138,8 @@ function Header() {
                         </div>
                         <ul className={classes.listStyle}>
                             {
-                                animeList.map(ele =>(
-                                    <li className={classes.listItems} key={ele.mal_id}>
-                                        <img className={classes.listItemsIcon} src={ele.image_url} />
-                                        <span className={classes.listItemTitle}>{ele.title}</span>
-                                    </li>
+                                animeList.map(ele => (
+                                    <AnimeDialog anime={ele} />
                                 ))
                             }
                         </ul>

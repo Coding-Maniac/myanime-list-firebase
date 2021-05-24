@@ -30,7 +30,7 @@ function App() {
             )
         }
         ,[])
-    console.log(anime)
+    console.log(anime.airing)
     let val;
     if(error){
         val = <div>Error: {error.message}</div>

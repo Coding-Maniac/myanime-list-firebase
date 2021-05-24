@@ -94,7 +94,7 @@ function ListingCard(props){
                         {/* Status of Anime */}
 
                         <Typography variant="caption" className={classes.subHeading}>Airing</Typography>
-                        <Typography  variant="h6" className={classes.status} >Yes</Typography>
+                        <Typography  variant="h6" className={classes.status} style={{textTransform:'capitalize'}} >{props.api.airing? 'True': 'False'}</Typography>
                     </Grid>
                 </Grid>
                 <Button variant="contained" size="small" color="primary" className={[classes.w100,classes.mt5]}>
