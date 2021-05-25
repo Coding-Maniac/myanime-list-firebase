@@ -11,7 +11,9 @@ import {
     FormHelperText, Typography,
     Button
 } from "@material-ui/core";
-import { fade, makeStyles } from "@material-ui/core/styles";
+import {  makeStyles } from "@material-ui/core/styles";
+import { db } from '../Firebase/Firebase';
+import firebase from 'firebase/app';
 
 const useStyles = makeStyles(() => ({
     listStyle: {
@@ -64,13 +66,19 @@ const useStyles = makeStyles(() => ({
         margin: '1rem'
     }
 }))
-const AnimeDialog = (props) => {
+
+const AnimeDialog = ({anime, setAnimeList}) => {
+
     const classes =useStyles()
+
     const [open, setOpen] = useState(false);
+
     const [status, setStatus] = useState('Currently Watching');
+
     const handleClickOpen = () => {
         setOpen(true);
     }
+
     const handleClose = () => {
         setOpen(false);
     }
@@ -79,71 +87,133 @@ const AnimeDialog = (props) => {
         setStatus(event.target.value)
     }
 
+    const handleClick = (id) => {
+        fetch(`https://api.jikan.moe/v3/anime/${id}`).then(
+            res => res.json()
+        ).then(
+            res=>{
+                db.collection('anime').add({
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    logo: res.image_url,
+                    name: res.title,
+                    episodes: res.episodes,
+                    rating: res.score,
+                    status: status,
+                    airing: res.airing,
+                    prequel: res.related.Prequel || '' ,
+                    sequel: res.related.Sequel || ''
+                })
+                setAnimeList([])
+            }
+        ).catch(err => (
+            console.log(err)
+        ))
+    }
+
     return(
         <div>
-            <li className={classes.listItems} key={props.anime.mal_id} onClick={handleClickOpen}>
-                <img className={classes.listItemsIcon} src={props.anime.image_url} />
-                <span className={classes.listItemTitle}>{props.anime.title}</span>
+
+            <li className={classes.listItems} key={anime.mal_id} onClick={handleClickOpen}>
+                <img className={classes.listItemsIcon} src={anime.image_url} alt={`${anime.name} logo`} />
+                <span className={classes.listItemTitle}>{anime.title}</span>
             </li>
+
             <Dialog
                 open={open}
                 onClose={handleClose}
             >
                 <DialogTitle>
+
                     <Container>
+
                        <Grid container spacing={2}>
+
                            <Grid item xs={2}>
-                               <img src={props.anime.image_url} className={classes.logo} alt=""/>
+
+                               <img src={anime.image_url} className={classes.logo} alt=""/>
+
                            </Grid>
+
                            <Grid item xs={9} style={{margin:"auto"}}>
-                               <h4 className={classes.title}>{props.anime.title}</h4>
+
+                               <h4 className={classes.title}>{anime.title}</h4>
+
                            </Grid>
+
                            <Grid item xs={6}>
+
                                <p className={classes.subHeading}>Episodes</p>
-                               <h4 className={classes.value}>{props.anime.episodes}</h4>
+                               <h4 className={classes.value}>{anime.episodes}</h4>
+
                            </Grid>
+
                            <Grid item xs={6}>
+
                                <p className={classes.subHeading}>Rating</p>
-                               <h4 className={classes.value}>{props.anime.score}</h4>
+                               <h4 className={classes.value}>{anime.score}</h4>
+
                            </Grid>
                            <Grid item xs={6}>
+
                                <FormControl style={{minWidth: '120px'}}>
+
                                    <InputLabel id="status">Status</InputLabel>
+
                                    <Select
                                        labelID={"status"}
                                        id={"select-status"}
                                        value={status}
                                        onChange={handleStatus}
                                    >
+
                                        <MenuItem value={'Currently Watching'} >
                                            Currently Watching
                                        </MenuItem>
+
                                        <MenuItem value={'Completed'}>
                                            Completed
                                        </MenuItem>
+
                                        <MenuItem value={'On Hold'}>
                                            On Hold
                                        </MenuItem>
+
                                        <MenuItem value={"Dropped"}>
                                            Dropped
                                        </MenuItem>
+
                                    </Select>
+
                                    <FormHelperText>Required</FormHelperText>
+
                                </FormControl>
+
                            </Grid>
+
                            <Grid item xs={6}>
+
                                <p className={classes.subHeading}>Airing</p>
-                               <h4 className={classes.value}>{props.anime.airing ? 'True': 'False'}</h4>
+
+                               <h4 className={classes.value}>{anime.airing ? 'True': 'False'}</h4>
+
                            </Grid>
-                           <Button variant="contained" size="small" color="primary" className={classes.addBtn}>
+
+                           <p>{anime.id}</p>
+
+                           <Button variant="contained" size="small" color="primary" onClick={() => handleClick(anime.mal_id)} className={classes.addBtn}>
+
                            <Typography variant="button" >ADD TO {status}</Typography>
+
                        </Button>
+
                        </Grid>
 
                     </Container>
 
                 </DialogTitle>
+
             </Dialog>
+
         </div>
 
     )

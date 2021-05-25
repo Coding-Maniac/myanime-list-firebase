@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import {TextField, Typography} from "@material-ui/core";
+import {Typography} from "@material-ui/core";
 import {InputBase} from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from '@material-ui/icons/Search';
-import {Autocomplete} from "@material-ui/lab";
 import AnimeDialog from "./AnimeDialog";
+
+
 // We are setting the styles using useStyles
+
 const useStyles = makeStyles((theme) => ({
     root:{
         flexGrow: 1,
@@ -89,16 +91,19 @@ const useStyles = makeStyles((theme) => ({
         width: '30px'
     },
 }));
+
+
 function Header() {
-    const val = [
-        {title: 'hii'},
-        {title: 'Vall'}
-    ]
+
     const [search,setSearch] = useState("");
     const [animeList, setAnimeList] = useState([]) ;
+
     // Calling useStyles and assign it to classes to access the styling
 
     useEffect(() => {
+        if(search.length <3){
+            setAnimeList([])
+        }
         if (search.length >= 3) {
             fetch(`https://api.jikan.moe/v3/search/anime?q=${search}&limit=6`).then(
                 res => res.json()
@@ -110,23 +115,32 @@ function Header() {
             )
         }
     },[search])
+
     const classes = useStyles();
-    // console.log(`Search: ${search}`)
+
     // Writing the actual Navbar code
-    console.log(animeList)
+
     return(
 
         <div className={classes.root}>
+
             <AppBar position="static" >
+
                 <Toolbar>
+
                     <Typography className={classes.title} variant="h6" noWrap>
                         My Anime List
                     </Typography>
+
                     <div style={{position: 'relative'}}>
+
                         <div className={classes.search}>
+
                             <div className={classes.searchIcon}>
-                                <SearchIcon/>
+
+                                <SearchIcon />
                             </div>
+
                             <InputBase placeholder="search" classes={{
                                 root: classes.inputRoot,
                                 input: classes.inputInput,
@@ -135,17 +149,23 @@ function Header() {
                            value={search}
                            onChange={(e) => setSearch(e.target.value)}
                             />
+
                         </div>
+
                         <ul className={classes.listStyle}>
                             {
                                 animeList.map(ele => (
-                                    <AnimeDialog anime={ele} />
+                                    <AnimeDialog anime={ele}  setAnimeList={setAnimeList}/>
                                 ))
                             }
                         </ul>
+
                     </div>
+
                 </Toolbar>
+
             </AppBar>
+
         </div>
     )
 }

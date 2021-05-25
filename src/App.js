@@ -3,51 +3,51 @@ import Header from './components/Header'
 import {Container, Grid} from "@material-ui/core";
 import ListingCard from './components/ListingCard'
 import {useEffect, useState} from "react";
+import {db} from './Firebase/Firebase';
 function App() {
-    const api = {
-        'image_url' : 'https://cdn.myanimelist.net/images/anime/13/17405.jpg',
-        'title_english': 'Naruto',
-        'episodes': 220,
-        'rating':'',
-        'status': 'Watching',
-        'airing': 'Yes'
-    }
+    // Initializing State
     const [loading,setLoading] = useState(true)
-    const [anime,setAnime] = useState({});
-    const [error,setError] = useState(null);
-    useEffect(
-        ()=> {
-            fetch('https://api.jikan.moe/v3/anime/20').then(
-                res => res.json()
-            ).then(
-                res => {
-                    setLoading(false);
-                    setAnime(res)
-                },
-                error => {
-                    setError(error);
-                }
-            )
+    const [animeList, setAnimeList] = useState([])
+
+    // Initializing useEffect call to fetch anime list from db
+    useEffect(() => {
+        db.collection('anime').orderBy('timestamp','desc').onSnapshot(snapshot => {
+            setAnimeList(snapshot.docs.map( doc => doc.data() ))
+        })
+    },[])
+
+    // useEffect call to display the anime list
+    useEffect(() => {
+        if(animeList){
+            setLoading(false)
         }
-        ,[])
-    console.log(anime.airing)
-    let val;
-    if(error){
-        val = <div>Error: {error.message}</div>
-    }else if(loading){
-        val = <div>Loading !!!!</div>
-    }else{
-        val = <ListingCard api={anime} />
-    }
+    },[animeList])
+
   return (
+
     <div className="App">
+
         <Header />
+
         <Container className="mt-5" maxWidth="md" >
+
             <Grid container spacing={1}>
-                <Grid container item md={3}>
-                    {val}
-                </Grid>
+
+                {loading ? 'loading' : animeList.map(
+                    anime => (
+
+                        <Grid container item md={4}>
+
+                            <ListingCard api={anime}  />
+
+                        </Grid>
+
+                    )
+
+                ) }
+
             </Grid>
+
         </Container>
     </div>
   );
