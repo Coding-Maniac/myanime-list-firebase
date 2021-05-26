@@ -1,14 +1,13 @@
 import './App.css';
 import Header from './components/Header'
 import {Container, Grid} from "@material-ui/core";
-import ListingCard from './components/ListingCard'
 import {useEffect, useState} from "react";
 import {db} from './Firebase/Firebase';
+import DetailsDialog from "./components/DetailsDialog";
 function App() {
     // Initializing State
     const [loading,setLoading] = useState(true)
     const [animeList, setAnimeList] = useState([])
-
     // Initializing useEffect call to fetch anime list from db
     useEffect(() => {
         db.collection('anime').orderBy('timestamp','desc').onSnapshot(snapshot => {
@@ -38,7 +37,7 @@ function App() {
 
                         <Grid container item md={4}>
 
-                            <ListingCard api={anime}  />
+                            <DetailsDialog api={anime}  />
 
                         </Grid>
 

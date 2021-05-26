@@ -73,6 +73,7 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: '0',
         borderRadius: '4px',
         boxShadow: "-2px 3px 9px #a19d9d",
+        zIndex:'100'
 
     },
     listItems: {
@@ -112,7 +113,9 @@ function Header() {
                     let results = res.results;
                     setAnimeList(results)
                 }
-            )
+            ).catch(err => {
+                console.log(err)
+            })
         }
     },[search])
 

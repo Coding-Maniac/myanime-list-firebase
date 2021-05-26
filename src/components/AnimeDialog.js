@@ -9,12 +9,12 @@ import {
     Select,
     MenuItem,
     FormHelperText, Typography,
-    Button
+    Button, DialogContent
 } from "@material-ui/core";
 import {  makeStyles } from "@material-ui/core/styles";
 import { db } from '../Firebase/Firebase';
 import firebase from 'firebase/app';
-
+import SnackBar from './SnackBar'
 const useStyles = makeStyles(() => ({
     listStyle: {
         position: 'absolute',
@@ -27,6 +27,7 @@ const useStyles = makeStyles(() => ({
         borderRadius: '4px',
         boxShadow: "-2px 3px 9px #a19d9d",
 
+
     },
     listItems: {
         padding: '1rem',
@@ -34,6 +35,7 @@ const useStyles = makeStyles(() => ({
         borderBottom: '1px solid black',
         display: 'flex',
         alignItems:'center',
+        zIndex:'100'
     },
     listItemTitle: {
         fontSize:'16px',
@@ -70,7 +72,9 @@ const useStyles = makeStyles(() => ({
 const AnimeDialog = ({anime, setAnimeList}) => {
 
     const classes =useStyles()
-
+    const [snackState, setSnackState] = useState();
+    const [snackType, setSnackType ] = useState();
+    const [snackMessage, setSnackMessage] = useState();
     const [open, setOpen] = useState(false);
 
     const [status, setStatus] = useState('Currently Watching');
@@ -92,7 +96,7 @@ const AnimeDialog = ({anime, setAnimeList}) => {
             res => res.json()
         ).then(
             res=>{
-                db.collection('anime').add({
+                db.collection('anime').doc(`${res.title}`).set({
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     logo: res.image_url,
                     name: res.title,
@@ -103,118 +107,128 @@ const AnimeDialog = ({anime, setAnimeList}) => {
                     prequel: res.related.Prequel || '' ,
                     sequel: res.related.Sequel || ''
                 })
-                setAnimeList([])
+                setSnackState(true)
+                setSnackType('success')
+                setSnackMessage('Successfully added Anime to list')
+
             }
-        ).catch(err => (
-            console.log(err)
-        ))
+        ).catch(err => {
+                console.log(err)
+                setSnackState(false)
+                setSnackType('warning')
+                setSnackMessage('Error occured in adding anime to the list')
+            }
+        )
     }
 
     return(
-        <div>
+        <>
+            <div>
 
-            <li className={classes.listItems} key={anime.mal_id} onClick={handleClickOpen}>
-                <img className={classes.listItemsIcon} src={anime.image_url} alt={`${anime.name} logo`} />
-                <span className={classes.listItemTitle}>{anime.title}</span>
-            </li>
+                <li className={classes.listItems} key={anime.mal_id} onClick={handleClickOpen}>
+                    <img className={classes.listItemsIcon} src={anime.image_url} alt={`${anime.name} logo`} />
+                    <span className={classes.listItemTitle}>{anime.title}</span>
+                </li>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                >
+                    <DialogContent>
 
-            <Dialog
-                open={open}
-                onClose={handleClose}
-            >
-                <DialogTitle>
+                        <Container>
 
-                    <Container>
+                            <Grid container spacing={2}>
 
-                       <Grid container spacing={2}>
+                                <Grid item xs={2}>
 
-                           <Grid item xs={2}>
+                                    <img src={anime.image_url} className={classes.logo} alt=""/>
 
-                               <img src={anime.image_url} className={classes.logo} alt=""/>
+                                </Grid>
 
-                           </Grid>
+                                <Grid item xs={9} style={{margin:"auto"}}>
 
-                           <Grid item xs={9} style={{margin:"auto"}}>
+                                    <h4 className={classes.title}>{anime.title}</h4>
 
-                               <h4 className={classes.title}>{anime.title}</h4>
+                                </Grid>
 
-                           </Grid>
+                                <Grid item xs={6}>
 
-                           <Grid item xs={6}>
+                                    <p className={classes.subHeading}>Episodes</p>
+                                    <h4 className={classes.value}>{anime.episodes}</h4>
 
-                               <p className={classes.subHeading}>Episodes</p>
-                               <h4 className={classes.value}>{anime.episodes}</h4>
+                                </Grid>
 
-                           </Grid>
+                                <Grid item xs={6}>
 
-                           <Grid item xs={6}>
+                                    <p className={classes.subHeading}>Rating</p>
+                                    <h4 className={classes.value}>{anime.score}</h4>
 
-                               <p className={classes.subHeading}>Rating</p>
-                               <h4 className={classes.value}>{anime.score}</h4>
+                                </Grid>
+                                <Grid item xs={6}>
 
-                           </Grid>
-                           <Grid item xs={6}>
+                                    <FormControl style={{minWidth: '120px'}}>
 
-                               <FormControl style={{minWidth: '120px'}}>
+                                        <InputLabel id="status">Status</InputLabel>
 
-                                   <InputLabel id="status">Status</InputLabel>
+                                        <Select
+                                            labelID={"status"}
+                                            id={"select-status"}
+                                            value={status}
+                                            onChange={handleStatus}
+                                        >
 
-                                   <Select
-                                       labelID={"status"}
-                                       id={"select-status"}
-                                       value={status}
-                                       onChange={handleStatus}
-                                   >
+                                            <MenuItem value={'Currently Watching'} >
+                                                Currently Watching
+                                            </MenuItem>
 
-                                       <MenuItem value={'Currently Watching'} >
-                                           Currently Watching
-                                       </MenuItem>
+                                            <MenuItem value={'Completed'}>
+                                                Completed
+                                            </MenuItem>
 
-                                       <MenuItem value={'Completed'}>
-                                           Completed
-                                       </MenuItem>
+                                            <MenuItem value={'On Hold'}>
+                                                On Hold
+                                            </MenuItem>
 
-                                       <MenuItem value={'On Hold'}>
-                                           On Hold
-                                       </MenuItem>
+                                            <MenuItem value={"Dropped"}>
+                                                Dropped
+                                            </MenuItem>
 
-                                       <MenuItem value={"Dropped"}>
-                                           Dropped
-                                       </MenuItem>
+                                        </Select>
 
-                                   </Select>
+                                        <FormHelperText>Required</FormHelperText>
 
-                                   <FormHelperText>Required</FormHelperText>
+                                    </FormControl>
 
-                               </FormControl>
+                                </Grid>
 
-                           </Grid>
+                                <Grid item xs={6}>
 
-                           <Grid item xs={6}>
+                                    <p className={classes.subHeading}>Airing</p>
 
-                               <p className={classes.subHeading}>Airing</p>
+                                    <h4 className={classes.value}>{anime.airing ? 'True': 'False'}</h4>
 
-                               <h4 className={classes.value}>{anime.airing ? 'True': 'False'}</h4>
+                                </Grid>
 
-                           </Grid>
+                                <p>{anime.id}</p>
 
-                           <p>{anime.id}</p>
+                                <Button variant="contained" size="small" color="primary" onClick={() => handleClick(anime.mal_id)} className={classes.addBtn}>
 
-                           <Button variant="contained" size="small" color="primary" onClick={() => handleClick(anime.mal_id)} className={classes.addBtn}>
+                                    <Typography variant="button" >ADD TO {status}</Typography>
 
-                           <Typography variant="button" >ADD TO {status}</Typography>
+                                </Button>
 
-                       </Button>
+                            </Grid>
 
-                       </Grid>
+                        </Container>
 
-                    </Container>
+                    </DialogContent>
 
-                </DialogTitle>
+                </Dialog>
 
-            </Dialog>
+            </div>
+            <SnackBar snackState={snackState}  type={snackType} message={snackMessage} />
+        </>
 
-        </div>
 
     )
 }

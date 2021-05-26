@@ -22,8 +22,9 @@ const useStyles = makeStyles({
         fontWeight: 400,
     },
     value: {
-        fontSize: "1.1rem",
-        fontWeight: "bold"
+        fontSize: "0.9rem",
+        fontWeight: "bold",
+        maxHeight: '50px'
     },
     mAuto:{
         margin: "auto"
@@ -65,7 +66,7 @@ function ListingCard(props){
                     {/* Anime Name */}
                     <Grid item xs={9} className={classes.mAuto}>
 
-                        <Typography variant="h6"  className={classes.value} >{props.api.name}</Typography>
+                        <Typography variant="h6"  className={classes.value} >{(props.api.name.length) > 40 ? `${props.api.name.substr(0,40)} ...` : props.api.name }</Typography>
 
                     </Grid>
 
@@ -91,7 +92,7 @@ function ListingCard(props){
                         {/* Status of Anime */}
 
                         <Typography variant="caption" className={classes.subHeading}>Status</Typography>
-                        <Typography  variant="h6" className={classes.status} >Watching</Typography>
+                        <Typography  variant="h6" className={classes.status} >{props.status}</Typography>
 
                     </Grid>
 
@@ -105,9 +106,9 @@ function ListingCard(props){
 
                 </Grid>
 
-                <Button variant="contained" size="small" color="primary" className={[classes.w100,classes.mt5]}>
+                <Button variant="contained" size="small" color="primary" className={[classes.w100,classes.mt5]} onClick={props.handleClickOpen}>
 
-                    <Typography variant="button">More Details</Typography>
+                    <Typography variant="button" >More Details</Typography>
 
                 </Button>
 
