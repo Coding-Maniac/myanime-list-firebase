@@ -1,11 +1,18 @@
 #My anime list log
-## API: [Jikan Moe](https://jikan.moe/)
 
+## Short Description
+A website where you can search your favorite anime and keep track of it
+
+* API : [Jikan Moe](https://jikan.moe/)
+* Design: Material UI
 
 This is an attempt in creating an anime list website that i like
 
 Self log
 
+### May 27 , 2021
+
+Update feature and snackbar display on updation
 ### May 26,2021
 
 working db read and write (firebase)
