@@ -1,3 +1,5 @@
+// This component is used to display the dialog to confirm adding of anime to the list
+
 import React, {useState} from 'react';
 import {
     Container,
@@ -13,7 +15,6 @@ import {
 import {  makeStyles } from "@material-ui/core/styles";
 import { db } from '../Firebase/Firebase';
 import firebase from 'firebase/app';
-import SnackBar from './SnackBar'
 const useStyles = makeStyles(() => ({
     listStyle: {
         position: 'absolute',
@@ -68,15 +69,13 @@ const useStyles = makeStyles(() => ({
     }
 }))
 
-const AnimeDialog = ({anime, setAnimeList}) => {
+const AnimeDialog = ({anime, setAnimeList,setSnackState,setSnackType, setSnackMessage}) => {
 
     const classes =useStyles()
-    const [snackState, setSnackState] = useState();
-    const [snackType, setSnackType ] = useState();
-    const [snackMessage, setSnackMessage] = useState();
+
     const [open, setOpen] = useState(false);
 
-    const [status, setStatus] = useState('Currently Watching');
+    const [status, setStatus] = useState('To Watch');
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -109,7 +108,7 @@ const AnimeDialog = ({anime, setAnimeList}) => {
                 setSnackState(true)
                 setSnackType('success')
                 setSnackMessage('Successfully added Anime to list')
-
+                setAnimeList([]);
             }
         ).catch(err => {
                 console.log(err)
@@ -175,9 +174,12 @@ const AnimeDialog = ({anime, setAnimeList}) => {
                                             value={status}
                                             onChange={handleStatus}
                                         >
+                                            <MenuItem value={'To Watch'} >
+                                                To Watch
+                                            </MenuItem>
 
-                                            <MenuItem value={'Currently Watching'} >
-                                                Currently Watching
+                                            <MenuItem value={'Watching'} >
+                                                Watching
                                             </MenuItem>
 
                                             <MenuItem value={'Completed'}>
@@ -225,7 +227,7 @@ const AnimeDialog = ({anime, setAnimeList}) => {
                 </Dialog>
 
             </div>
-            <SnackBar snackState={snackState}  type={snackType} message={snackMessage} />
+
         </>
 
 

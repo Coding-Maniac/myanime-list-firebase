@@ -6,6 +6,7 @@ import {InputBase} from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from '@material-ui/icons/Search';
 import AnimeDialog from "./AnimeDialog";
+import SnackBar from "./SnackBar";
 
 
 // We are setting the styles using useStyles
@@ -98,7 +99,10 @@ function Header() {
 
     const [search,setSearch] = useState("");
     const [animeList, setAnimeList] = useState([]) ;
-
+    // Setting state for SnackBar
+    const [snackState, setSnackState] = useState();
+    const [snackType, setSnackType ] = useState();
+    const [snackMessage, setSnackMessage] = useState();
     // Calling useStyles and assign it to classes to access the styling
 
     useEffect(() => {
@@ -158,7 +162,13 @@ function Header() {
                         <ul className={classes.listStyle}>
                             {
                                 animeList.map(ele => (
-                                    <AnimeDialog anime={ele}  setAnimeList={setAnimeList}/>
+                                    <AnimeDialog
+                                        anime={ele}
+                                        setAnimeList={setAnimeList}
+                                        setSnackState={setSnackState}
+                                        setSnackType={setSnackType}
+                                        setSnackMessage={setSnackMessage}
+                                    />
                                 ))
                             }
                         </ul>
@@ -168,7 +178,7 @@ function Header() {
                 </Toolbar>
 
             </AppBar>
-
+            <SnackBar snackState={snackState}  type={snackType} message={snackMessage}  />
         </div>
     )
 }

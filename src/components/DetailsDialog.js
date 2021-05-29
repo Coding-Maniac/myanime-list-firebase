@@ -1,4 +1,6 @@
-import React, {useState} from 'react';
+// This component is used to display details of the particular anime
+
+import React, {useState,useEffect, useRef} from 'react';
 import {
     Container,
     Dialog,
@@ -40,10 +42,12 @@ const useStyles = makeStyles(() => ({
 }))
 const DetailsDialog = ({api}) => {
     const classes = useStyles()
+    const initialRender = useRef(true)
     const [open, setOpen] = React.useState(false);
     const [snackState, setSnackState] = useState();
     const [snackType, setSnackType ] = useState();
     const [snackMessage, setSnackMessage] = useState();
+    const [status, setStatus] = useState(api.status);
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -51,18 +55,26 @@ const DetailsDialog = ({api}) => {
     const handleClose = () => {
         setOpen(false);
     };
-    const handleStatus = (event) => {
-        setStatus(event.target.value)
+    const handleStatus = async (event) => {
+        await setStatus(event.target.value)
     }
-    const updateDoc = () => {
+    useEffect(()=>{
+        if(initialRender.current){
+            initialRender.current = false
+        }
+        else{
+            updateAnime()
+        }
+    },[status])
+    const updateAnime = () => {
         let updateAnime = db.collection('anime').doc(api.name);
-        return updateAnime.update({
+        updateAnime.update({
             status: status,
         }).then(() => {
             setSnackState(true)
             setSnackType('success')
-            setSnackMessage('Database Updated Successfully');
-            console.log('Successfully Update')
+            setSnackMessage('Status Updated Successfully');
+            setSnackState(false)
         }).catch((error) => {
             setSnackState(true)
             setSnackType('warning')
@@ -70,11 +82,15 @@ const DetailsDialog = ({api}) => {
             console.log('Error',error);
         })
     }
+    const updateDoc = () => {
+        updateAnime()
+        handleClose()
+    }
 
-    const [status, setStatus] = useState(api.status);
+
     return(
         <>
-            <ListingCard key={api.name} status={status} api={api} handleClickOpen={handleClickOpen}></ListingCard>
+            <ListingCard key={api.name} handleStatus={handleStatus} status={status} setStatus={setStatus} api={api} handleClickOpen={handleClickOpen}/>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -122,9 +138,12 @@ const DetailsDialog = ({api}) => {
                                         value={status}
                                         onChange={handleStatus}
                                     >
+                                        <MenuItem value={'To Watch'} >
+                                            To Watch
+                                        </MenuItem>
 
-                                        <MenuItem value={'Currently Watching'} >
-                                            Currently Watching
+                                        <MenuItem value={'Watching'} >
+                                            Watching
                                         </MenuItem>
 
                                         <MenuItem value={'Completed'}>

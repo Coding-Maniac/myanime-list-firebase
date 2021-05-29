@@ -1,5 +1,5 @@
 import React from 'react';
-import {Grid, makeStyles} from "@material-ui/core";
+import {FormControl, FormHelperText, Grid, InputLabel, makeStyles, MenuItem, Select} from "@material-ui/core";
 import Card from '@material-ui/core/Card';
 import {CardContent} from "@material-ui/core";
 import {Button} from "@material-ui/core";
@@ -41,11 +41,16 @@ const useStyles = makeStyles({
     },
     mt5:{
         marginTop: "1rem"
+    },
+    select: {
+        width: '6rem',
+        fontSize: '0.8rem'
     }
 });
 
 function ListingCard(props){
     const classes = useStyles()
+
 
     return(
 
@@ -91,8 +96,42 @@ function ListingCard(props){
 
                         {/* Status of Anime */}
 
-                        <Typography variant="caption" className={classes.subHeading}>Status</Typography>
-                        <Typography  variant="h6" className={classes.status} >{props.status}</Typography>
+                        <FormControl style={{minWidth: '120px'}}>
+
+                            <InputLabel id="status">Status</InputLabel>
+
+                            <Select
+                                labelID={"status"}
+                                id={"select-status"}
+                                value={props.status}
+                                onChange={props.handleStatus}
+                                className={classes.select}
+                            >
+                                <MenuItem value={'To Watch'} >
+                                    To Watch
+                                </MenuItem>
+
+                                <MenuItem value={'Watching'} >
+                                    Watching
+                                </MenuItem>
+
+                                <MenuItem value={'Completed'}>
+                                    Completed
+                                </MenuItem>
+
+                                <MenuItem value={'On Hold'}>
+                                    On Hold
+                                </MenuItem>
+
+                                <MenuItem value={"Dropped"}>
+                                    Dropped
+                                </MenuItem>
+
+                            </Select>
+
+                            <FormHelperText>Required</FormHelperText>
+
+                        </FormControl>
 
                     </Grid>
 
